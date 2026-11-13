@@ -1,7 +1,13 @@
+export type Category = {
+  name: string;
+  description: string;
+  id: string;
+}
+
 export type Todo = {
   id: string;
   name: string;
   isDone: boolean;
-  priority: number;
+  category: Category | null;
   deadline: Date | null;
 };

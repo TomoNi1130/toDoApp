@@ -17,7 +17,13 @@ const TodoList = (props: Props) => {
     <div className="space-y-2">
       {todos.map((todo) => (
         <div key={todo.id} className="rounded border p-3">
-          {todo.name} 優先度: {todo.priority}
+          name : {todo.name}
+          <br />
+          isDone : {todo.isDone ? "true" : "false"}
+          <br />
+          category : {todo.category ? todo.category.name : "null"}
+          <br />
+          deadline : {todo.deadline ? todo.deadline.toISOString() : "null"}
         </div>
       ))}
     </div>
