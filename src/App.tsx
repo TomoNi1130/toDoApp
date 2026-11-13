@@ -1,12 +1,13 @@
 import { useState } from "react";
-import type { Todo } from "./TS/types";
-import { initTodos } from "./TS/initTodos";
+import type { Todo, Category } from "./TS/types";
+import { initTodos, initCategories } from "./TS/initTodos";
 import Header from "./header";
 import Calendar from "./Calendar/Calendar";
 import TodoList from "./TodoList";
 
 const App = () => {
   const [todos] = useState<Todo[]>(initTodos);
+  const [categories] = useState<Category[]>(initCategories);
 
   return (
     <>

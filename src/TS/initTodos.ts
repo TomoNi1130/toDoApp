@@ -5,11 +5,13 @@ export const initCategories:Category[] = [
   {
     id: uuidv4(),
     name: "勉強",
-    description: "Tasks related to programming"
+    description: "Tasks related to programming",
+    color: "blue"
   },{
     id: uuidv4(),
     name: "家事",
-    description: "Tasks related to housework"
+    description: "Tasks related to housework",
+    color: "green"
   }
 ]
 
@@ -30,7 +32,7 @@ export const initTodos:Todo[]=[
     id: uuidv4(),
     name: "Learn TypeScript",
     isDone: false,
-    category: categories.get("勉強") || null,
+    category: categories.get("家事") || null,
     deadline: null
   },
 ];
