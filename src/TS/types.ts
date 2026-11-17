@@ -1,4 +1,4 @@
-export type ThemeColor = | "blue" | "green" | "red" | "yellow" | "purple";
+export type ThemeColor = "blue" | "green" | "red" | "yellow" | "purple";
 
 export const categoryColorClasses = {
   blue: "bg-blue-100 text-blue-800 border-blue-500",
@@ -9,16 +9,17 @@ export const categoryColorClasses = {
 } satisfies Record<ThemeColor, string>;
 
 export type Category = {
+  id: string;
   name: string;
   description: string;
-  id: string;
   color: ThemeColor;
-}
+};
 
 export type Todo = {
   id: string;
   name: string;
   isDone: boolean;
+  priority: number;
   category: Category | null;
   deadline: Date | null;
 };

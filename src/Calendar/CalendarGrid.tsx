@@ -1,17 +1,17 @@
-import type { Todo } from "../TS/types";
+import { categoryColorClasses, type Todo } from "../TS/types";
 
 type Props = {
   displayMonth: Date;
   todos: Todo[];
+  onToggleTodo: (id: string) => void;
 };
 
 // UTCに変換せず、端末のタイムゾーンで日付を比較する。
-const dateKey = (date: Date) =>
-  `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+const dateKey = (date: Date) => `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
 
 const weekdays = ["日", "月", "火", "水", "木", "金", "土"];
 
-const CalendarGrid = ({ displayMonth, todos }: Props) => {
+const CalendarGrid = ({ displayMonth, todos, onToggleTodo }: Props) => {
   const year = displayMonth.getFullYear();
   const month = displayMonth.getMonth();
   const firstWeekday = new Date(year, month, 1).getDay();
@@ -51,11 +51,7 @@ const CalendarGrid = ({ displayMonth, todos }: Props) => {
           {Array.from({ length: weekCount }, (_, week) => (
             <tr key={week}>
               {weekdays.map((_, weekday) => {
-                const date = new Date(
-                  year,
-                  month,
-                  week * 7 + weekday - firstWeekday + 1,
-                );
+                const date = new Date(year, month, week * 7 + weekday - firstWeekday + 1);
                 const key = dateKey(date);
                 const isCurrentMonth = date.getMonth() === month;
                 const isToday = key === todayKey;
@@ -77,19 +73,21 @@ const CalendarGrid = ({ displayMonth, todos }: Props) => {
                       {dayTodos.map((todo) => (
                         <li
                           key={todo.id}
-                          className={`rounded border-l-2 p-1 text-xs break-words ${todo.isDone ? "border-gray-400 bg-gray-100 text-gray-500" : "border-blue-500 bg-blue-50 text-gray-900"}`}
+                          className={`rounded border-l-2 p-1 text-xs break-words ${todo.isDone ? "border-gray-400 bg-gray-100 text-gray-500" : categoryColorClasses[todo.category?.color ?? "blue"]}`}
                         >
-                          <span className={todo.isDone ? "line-through" : ""}>
-                            {todo.name}
-                          </span>
-                          {todo.isDone && (
-                            <span className="sr-only">（完了）</span>
-                          )}
-                          {todo.category && (
-                            <span className="mt-1 block text-[10px] text-gray-500">
-                              {todo.category.name}
+                          <button
+                            type="button"
+                            onClick={() => onToggleTodo(todo.id)}
+                            aria-label={`${todo.name}を${todo.isDone ? "未完了" : "完了"}にする`}
+                            aria-pressed={todo.isDone}
+                            className="block w-full rounded text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                          >
+                            <span className={todo.isDone ? "line-through" : ""}>{todo.name}</span>
+                            <span className="mt-1 block text-[10px]">
+                              優先度：{todo.priority === 1 ? "高" : todo.priority === 2 ? "中" : "低"}
                             </span>
-                          )}
+                            {todo.category && <span className="mt-1 block text-[10px]">{todo.category.name}</span>}
+                          </button>
                         </li>
                       ))}
                     </ul>
