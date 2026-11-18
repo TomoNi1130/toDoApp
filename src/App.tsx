@@ -118,7 +118,6 @@ const App = () => {
           onAddCategory={addCategory}
           onDeleteCategory={deleteCategory}
           onChangeCategoryColor={changeCategoryColor}
-          onToggleTodo={toggleTodo}
         />
         <TodoForm categories={categories} onAddTodo={addTodo} />
         <TodoList

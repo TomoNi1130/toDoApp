@@ -1,12 +1,14 @@
 import { useId, useRef, useState } from "react";
 import type { FormEvent } from "react";
-import type { Category, ThemeColor } from "../TS/types";
+import type { Category, ThemeColor, Todo } from "../TS/types";
 import { categoryColorClasses } from "../TS/types";
 
 type NewCategory = Omit<Category, "id">;
 
 type Props = {
   current_categories: Category[];
+  selectedTodo: Todo | undefined;
+  onCloseTodo: () => void;
   onAddCategory: (category: NewCategory) => void;
   onDeleteCategory: (categoryId: Category["id"]) => void;
   onChangeCategoryColor: (categoryId: Category["id"], color: Category["color"]) => void;
@@ -47,6 +49,30 @@ const CalendarSideBar = (props: Props) => {
     });
     dialogRef.current?.close();
   };
+
+  if (props.selectedTodo) {
+    const todo = props.selectedTodo;
+
+    return (
+      <section
+        aria-label="タスク詳細"
+        className="w-full shrink-0 rounded-lg border border-gray-200 bg-white p-4 text-gray-900 md:w-64"
+      >
+        <h3 className="text-lg font-bold">{todo.name}</h3>
+
+        <p>状態：{todo.isDone ? "完了" : "未完了"}</p>
+        <p>カテゴリ：{todo.category?.name ?? "なし"}</p>
+        <p>
+          期限：
+          {todo.deadline?.toLocaleDateString("ja-JP") ?? "未設定"}
+        </p>
+
+        <button type="button" onClick={props.onCloseTodo} className="mt-3 rounded border px-3 py-1">
+          閉じる
+        </button>
+      </section>
+    );
+  }
 
   return (
     <div className="w-full shrink-0 rounded-lg border border-gray-200 bg-white p-4 text-gray-900 md:w-64">

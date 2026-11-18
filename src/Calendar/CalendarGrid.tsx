@@ -3,7 +3,7 @@ import { categoryColorClasses, type Todo } from "../TS/types";
 type Props = {
   displayMonth: Date;
   todos: Todo[];
-  onToggleTodo: (id: string) => void;
+  onSelectTodo: (id: string) => void;
 };
 
 // UTCに変換せず、端末のタイムゾーンで日付を比較する。
@@ -11,7 +11,7 @@ const dateKey = (date: Date) => `${date.getFullYear()}-${date.getMonth() + 1}-${
 
 const weekdays = ["日", "月", "火", "水", "木", "金", "土"];
 
-const CalendarGrid = ({ displayMonth, todos, onToggleTodo }: Props) => {
+const CalendarGrid = ({ displayMonth, todos, onSelectTodo }: Props) => {
   const year = displayMonth.getFullYear();
   const month = displayMonth.getMonth();
   const firstWeekday = new Date(year, month, 1).getDay();
@@ -77,9 +77,8 @@ const CalendarGrid = ({ displayMonth, todos, onToggleTodo }: Props) => {
                         >
                           <button
                             type="button"
-                            onClick={() => onToggleTodo(todo.id)}
-                            aria-label={`${todo.name}を${todo.isDone ? "未完了" : "完了"}にする`}
-                            aria-pressed={todo.isDone}
+                            onClick={() => onSelectTodo(todo.id)}
+                            aria-label={`${todo.name}の詳細を表示`}
                             className="block w-full rounded text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
                           >
                             <span className={todo.isDone ? "line-through" : ""}>{todo.name}</span>
