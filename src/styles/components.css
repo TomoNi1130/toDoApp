@@ -234,8 +234,16 @@
   flex-wrap: wrap;
   gap: 7px;
 }
-.category-list .color-options {
+.category-details {
   padding: 3px 6px 13px;
+}
+.category-description {
+  margin-bottom: 10px;
+  color: #697887;
+  font-size: 14px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 .color-swatch {
   display: inline-flex;

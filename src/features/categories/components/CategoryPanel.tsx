@@ -11,7 +11,7 @@ type Props = {
 };
 
 export default function CategoryPanel({ categories, onAddCategory, onDeleteCategory, onChangeCategoryColor }: Props) {
-  const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null);
+  const [expandedCategoryId, setExpandedCategoryId] = useState<string | null>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const formId = useId();
   const [newCategory, setNewCategory] = useState<Omit<Category, "id">>({ name: "", description: "", color: "blue" });
@@ -31,23 +31,23 @@ export default function CategoryPanel({ categories, onAddCategory, onDeleteCateg
           カテゴリ
         </h2>
       </div>
-      <p className="section-hint">カテゴリをクリックして色を変更</p>
+      <p className="section-hint">カテゴリをクリックして説明と色設定を表示</p>
       {categories.length === 0 ? (
         <p className="category-empty">カテゴリはありません。</p>
       ) : (
         <ul className="category-list">
           {categories.map((category) => {
-            const isEditing = editingCategoryId === category.id;
+            const isExpanded = expandedCategoryId === category.id;
             return (
               <li key={category.id}>
                 <div className="category-row">
                   <button
                     type="button"
                     className={`category-select ${categoryColorClasses[category.color]}`}
-                    aria-expanded={isEditing}
-                    aria-label={`${category.name}の色を変更（現在：${colorOptions.find((option) => option.value === category.color)?.label}）`}
-                    aria-controls={`category-colors-${category.id}`}
-                    onClick={() => setEditingCategoryId(isEditing ? null : category.id)}
+                    aria-expanded={isExpanded}
+                    aria-label={`${category.name}の説明と色設定を表示（現在：${colorOptions.find((option) => option.value === category.color)?.label}）`}
+                    aria-controls={`category-details-${category.id}`}
+                    onClick={() => setExpandedCategoryId(isExpanded ? null : category.id)}
                   >
                     <span className="category-dot" />
                     <span className="category-name">{category.name}</span>
@@ -71,26 +71,26 @@ export default function CategoryPanel({ categories, onAddCategory, onDeleteCateg
                     削除
                   </button>
                 </div>
-                {isEditing && (
-                  <div
-                    id={`category-colors-${category.id}`}
-                    role="group"
-                    aria-label={`${category.name}のテーマカラー`}
-                    className="color-options"
-                  >
-                    {colorOptions.map((option) => (
-                      <button
-                        type="button"
-                        key={option.value}
-                        className={`color-swatch ${categoryColorClasses[option.value]}`}
-                        aria-label={`${category.name}を${option.label}に変更`}
-                        aria-pressed={category.color === option.value}
-                        onClick={() => onChangeCategoryColor(category.id, option.value)}
-                      >
-                        <span className="category-dot" />
-                        {option.label}
-                      </button>
-                    ))}
+                {isExpanded && (
+                  <div id={`category-details-${category.id}`} className="category-details">
+                    <p className="category-description">
+                      {category.description.trim() ? category.description : "説明はありません。"}
+                    </p>
+                    <div role="group" aria-label={`${category.name}のテーマカラー`} className="color-options">
+                      {colorOptions.map((option) => (
+                        <button
+                          type="button"
+                          key={option.value}
+                          className={`color-swatch ${categoryColorClasses[option.value]}`}
+                          aria-label={`${category.name}を${option.label}に変更`}
+                          aria-pressed={category.color === option.value}
+                          onClick={() => onChangeCategoryColor(category.id, option.value)}
+                        >
+                          <span className="category-dot" />
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 )}
               </li>
