@@ -88,7 +88,7 @@ export default function App() {
                 categories={categories}
                 onAddCategory={store.addCategory}
                 onDeleteCategory={store.deleteCategory}
-                onChangeCategoryColor={store.changeCategoryColor}
+                onUpdateCategory={store.updateCategory}
               />
             </div>
             <TodoList

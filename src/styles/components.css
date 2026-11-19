@@ -245,6 +245,11 @@
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
+.category-detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
 .color-swatch {
   display: inline-flex;
   align-items: center;
@@ -257,7 +262,7 @@
   color: var(--category-text);
   cursor: pointer;
 }
-.color-swatch[aria-pressed="true"] {
+.color-swatch:has(input:checked) {
   border-color: var(--category);
 }
 .color-swatch input {

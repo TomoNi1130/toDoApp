@@ -1,25 +1,47 @@
 import { useId, useRef, useState, type FormEvent } from "react";
 import Dialog from "../../../components/ui/Dialog";
 import Icon from "../../../components/ui/Icon";
-import { categoryColorClasses, colorOptions, type Category, type ThemeColor } from "../../../types/todo";
+import { categoryColorClasses, colorOptions, type Category } from "../../../types/todo";
 
 type Props = {
   categories: Category[];
   onAddCategory: (category: Omit<Category, "id">) => void;
   onDeleteCategory: (id: string) => void;
-  onChangeCategoryColor: (id: string, color: ThemeColor) => void;
+  onUpdateCategory: (id: string, fields: Omit<Category, "id">) => void;
 };
 
-export default function CategoryPanel({ categories, onAddCategory, onDeleteCategory, onChangeCategoryColor }: Props) {
+export default function CategoryPanel({ categories, onAddCategory, onDeleteCategory, onUpdateCategory }: Props) {
   const [expandedCategoryId, setExpandedCategoryId] = useState<string | null>(null);
+  const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const formId = useId();
-  const [newCategory, setNewCategory] = useState<Omit<Category, "id">>({ name: "", description: "", color: "blue" });
+  const [formValues, setFormValues] = useState<Omit<Category, "id">>({ name: "", description: "", color: "blue" });
+  const isEditing = editingCategoryId !== null;
+
+  const openDialog = (category?: Category) => {
+    setEditingCategoryId(category?.id ?? null);
+    setFormValues({
+      name: category?.name ?? "",
+      description: category?.description ?? "",
+      color: category?.color ?? "blue",
+    });
+    if (category) setExpandedCategoryId(category.id);
+    dialogRef.current?.showModal();
+  };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!newCategory.name.trim()) return;
-    onAddCategory({ ...newCategory, name: newCategory.name.trim(), description: newCategory.description.trim() });
+    if (!formValues.name.trim()) return;
+    const fields = {
+      ...formValues,
+      name: formValues.name.trim(),
+      description: formValues.description.trim(),
+    };
+    if (editingCategoryId !== null) {
+      onUpdateCategory(editingCategoryId, fields);
+    } else {
+      onAddCategory(fields);
+    }
     dialogRef.current?.close();
   };
 
@@ -31,7 +53,7 @@ export default function CategoryPanel({ categories, onAddCategory, onDeleteCateg
           カテゴリ
         </h2>
       </div>
-      <p className="section-hint">カテゴリをクリックして説明と色設定を表示</p>
+      <p className="section-hint">クリックで詳細、ダブルクリックで編集</p>
       {categories.length === 0 ? (
         <p className="category-empty">カテゴリはありません。</p>
       ) : (
@@ -45,9 +67,10 @@ export default function CategoryPanel({ categories, onAddCategory, onDeleteCateg
                     type="button"
                     className={`category-select ${categoryColorClasses[category.color]}`}
                     aria-expanded={isExpanded}
-                    aria-label={`${category.name}の説明と色設定を表示（現在：${colorOptions.find((option) => option.value === category.color)?.label}）`}
+                    aria-label={`${category.name}の詳細を表示`}
                     aria-controls={`category-details-${category.id}`}
-                    onClick={() => setExpandedCategoryId(isExpanded ? null : category.id)}
+                    onClick={() => setExpandedCategoryId(category.id)}
+                    onDoubleClick={() => openDialog(category)}
                   >
                     <span className="category-dot" />
                     <span className="category-name">{category.name}</span>
@@ -76,20 +99,22 @@ export default function CategoryPanel({ categories, onAddCategory, onDeleteCateg
                     <p className="category-description">
                       {category.description.trim() ? category.description : "説明はありません。"}
                     </p>
-                    <div role="group" aria-label={`${category.name}のテーマカラー`} className="color-options">
-                      {colorOptions.map((option) => (
-                        <button
-                          type="button"
-                          key={option.value}
-                          className={`color-swatch ${categoryColorClasses[option.value]}`}
-                          aria-label={`${category.name}を${option.label}に変更`}
-                          aria-pressed={category.color === option.value}
-                          onClick={() => onChangeCategoryColor(category.id, option.value)}
-                        >
-                          <span className="category-dot" />
-                          {option.label}
-                        </button>
-                      ))}
+                    <div className="category-detail-actions">
+                      <button
+                        type="button"
+                        className="button button-secondary"
+                        aria-haspopup="dialog"
+                        onClick={() => openDialog(category)}
+                      >
+                        編集
+                      </button>
+                      <button
+                        type="button"
+                        className="button button-secondary"
+                        onClick={() => setExpandedCategoryId(null)}
+                      >
+                        閉じる
+                      </button>
                     </div>
                   </div>
                 )}
@@ -105,15 +130,12 @@ export default function CategoryPanel({ categories, onAddCategory, onDeleteCateg
           aria-label="カテゴリを追加"
           title="カテゴリを追加"
           aria-haspopup="dialog"
-          onClick={() => {
-            setNewCategory({ name: "", description: "", color: "blue" });
-            dialogRef.current?.showModal();
-          }}
+          onClick={() => openDialog()}
         >
           <Icon name="plus" />
         </button>
       </div>
-      <Dialog dialogRef={dialogRef} title="カテゴリを追加">
+      <Dialog dialogRef={dialogRef} title={isEditing ? "カテゴリを編集" : "カテゴリを追加"}>
         <form onSubmit={handleSubmit} className="form-stack">
           <div className="form-field">
             <label htmlFor={`${formId}-name`}>
@@ -123,9 +145,9 @@ export default function CategoryPanel({ categories, onAddCategory, onDeleteCateg
               id={`${formId}-name`}
               autoFocus
               required
-              value={newCategory.name}
+              value={formValues.name}
               placeholder="例：趣味"
-              onChange={(event) => setNewCategory({ ...newCategory, name: event.target.value })}
+              onChange={(event) => setFormValues({ ...formValues, name: event.target.value })}
             />
           </div>
           <div className="form-field">
@@ -135,9 +157,9 @@ export default function CategoryPanel({ categories, onAddCategory, onDeleteCateg
             <textarea
               id={`${formId}-description`}
               rows={3}
-              value={newCategory.description}
+              value={formValues.description}
               placeholder="カテゴリの説明を入力"
-              onChange={(event) => setNewCategory({ ...newCategory, description: event.target.value })}
+              onChange={(event) => setFormValues({ ...formValues, description: event.target.value })}
             />
           </div>
           <fieldset className="form-field">
@@ -149,8 +171,8 @@ export default function CategoryPanel({ categories, onAddCategory, onDeleteCateg
                     type="radio"
                     name={`${formId}-color`}
                     value={option.value}
-                    checked={newCategory.color === option.value}
-                    onChange={() => setNewCategory({ ...newCategory, color: option.value })}
+                    checked={formValues.color === option.value}
+                    onChange={() => setFormValues({ ...formValues, color: option.value })}
                   />
                   {option.label}
                 </label>
@@ -161,9 +183,9 @@ export default function CategoryPanel({ categories, onAddCategory, onDeleteCateg
             <button type="button" className="button button-secondary" onClick={() => dialogRef.current?.close()}>
               キャンセル
             </button>
-            <button type="submit" className="button button-primary" disabled={!newCategory.name.trim()}>
-              <Icon name="plus" />
-              追加する
+            <button type="submit" className="button button-primary" disabled={!formValues.name.trim()}>
+              {!isEditing && <Icon name="plus" />}
+              {isEditing ? "編集完了" : "追加する"}
             </button>
           </div>
         </form>

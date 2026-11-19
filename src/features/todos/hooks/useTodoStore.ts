@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import type { Todo, Category, ThemeColor } from "../../../types/todo";
+import type { Todo, Category } from "../../../types/todo";
 import { initTodos, initCategories } from "../../../data/initialData";
 import { deserializeData, STORAGE_KEY, type AppData } from "../../../lib/storage";
+import { updateCategoryData } from "../../categories/utils/updateCategory";
 
 const loadData = () => {
   try {
@@ -41,13 +42,8 @@ export const useTodoStore = () => {
     setData((prev) => ({ ...prev, categories: [...prev.categories, newCategory] }));
   };
 
-  const changeCategoryColor = (categoryId: string, color: ThemeColor) => {
-    setData((prev) => ({
-      categories: prev.categories.map((category) => (category.id === categoryId ? { ...category, color } : category)),
-      todos: prev.todos.map((todo) =>
-        todo.category?.id === categoryId ? { ...todo, category: { ...todo.category, color } } : todo,
-      ),
-    }));
+  const updateCategory = (id: string, fields: Omit<Category, "id">) => {
+    setData((prev) => updateCategoryData(prev, id, fields));
   };
 
   const deleteCategory = (categoryId: string) => {
@@ -62,12 +58,12 @@ export const useTodoStore = () => {
     setData((prev) => ({ ...prev, todos: [...prev.todos, newTodo] }));
   };
 
-  const updateTodo = (id: string,updateFields: Omit<Todo, "id" | "isDone">) => {
-  setData((prev) => ({
-    ...prev,
-    todos: prev.todos.map((todo) => (todo.id === id ? { ...todo, ...updateFields } : todo)),
-  }));
-  }
+  const updateTodo = (id: string, updateFields: Omit<Todo, "id" | "isDone">) => {
+    setData((prev) => ({
+      ...prev,
+      todos: prev.todos.map((todo) => (todo.id === id ? { ...todo, ...updateFields } : todo)),
+    }));
+  };
 
   const toggleTodo = (id: string) => {
     setData((prev) => ({
@@ -96,7 +92,7 @@ export const useTodoStore = () => {
     saveError,
     retrySave,
     addCategory,
-    changeCategoryColor,
+    updateCategory,
     deleteCategory,
     addTodo,
     updateTodo,
