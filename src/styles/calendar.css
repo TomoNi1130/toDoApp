@@ -12,7 +12,8 @@
   gap: 10px;
 }
 .calendar-title h2 {
-  font-size: 20px;
+  font-size: 1.75rem;
+  line-height: 1.3;
   font-weight: 700;
   letter-spacing: -0.02em;
 }
