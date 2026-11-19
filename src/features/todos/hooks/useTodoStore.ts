@@ -1,12 +1,8 @@
 import { useEffect, useState } from "react";
-import type { Todo, Category, ThemeColor } from "./TS/types";
-import { initTodos, initCategories } from "./TS/initTodos";
-import { deserializeData, STORAGE_KEY, type AppData } from "./TS/storage";
-import Header from "./header";
-import Calendar from "./Calendar/Calendar";
-import TodoList from "./TodoList";
-import TodoForm from "./TodoForm";
 import { v4 as uuidv4 } from "uuid";
+import type { Todo, Category, ThemeColor } from "../../../types/todo";
+import { initTodos, initCategories } from "../../../data/initialData";
+import { deserializeData, STORAGE_KEY, type AppData } from "../../../lib/storage";
 
 const loadData = () => {
   try {
@@ -20,7 +16,7 @@ const loadData = () => {
   }
 };
 
-const App = () => {
+export const useTodoStore = () => {
   const [initial] = useState(loadData);
   const [data, setData] = useState<AppData>(initial.data);
   const [loadError, setLoadError] = useState(initial.error);
@@ -81,55 +77,23 @@ const App = () => {
     setData((prev) => ({ ...prev, todos: prev.todos.filter((todo) => !todo.isDone) }));
   };
 
-  const uncompletedCount = todos.filter((todo) => !todo.isDone).length;
+  const retrySave = () => {
+    setLoadError(false);
+    setData((previous) => ({ ...previous }));
+  };
 
-  return (
-    <>
-      <Header />
-      <main className="mx-auto w-full max-w-5xl space-y-6 px-4 pb-10 text-gray-900">
-        <div>
-          <h2 className="text-xl font-bold">タスクと予定</h2>
-          <p role="status" className="mt-1 text-sm text-gray-600">
-            未完了 {uncompletedCount}件 ／ 全{todos.length}件
-          </p>
-        </div>
-        {(loadError || saveError) && (
-          <div role="alert" className="rounded border border-red-200 bg-red-50 p-3 text-sm text-red-800">
-            <p>
-              {loadError
-                ? "保存データを読み込めなかったため、初期データを表示しています。変更はまだ保存されません。"
-                : "データを保存できませんでした。ブラウザの保存設定や空き容量を確認してください。"}
-            </p>
-            <button
-              type="button"
-              onClick={() => {
-                setLoadError(false);
-                setData((prev) => ({ ...prev }));
-              }}
-              className="mt-2 rounded border border-red-300 px-3 py-1 underline"
-            >
-              この内容で保存を再試行
-            </button>
-          </div>
-        )}
-        <Calendar
-          todos={todos}
-          categories={categories}
-          onAddCategory={addCategory}
-          onDeleteCategory={deleteCategory}
-          onChangeCategoryColor={changeCategoryColor}
-        />
-        <TodoForm categories={categories} onAddTodo={addTodo} />
-        <TodoList
-          todos={todos}
-          onToggleTodo={toggleTodo}
-          onDeleteTodo={deleteTodo}
-          onDeleteCompleted={deleteCompleted}
-        />
-        <p className="text-xs text-gray-500">タスクとカテゴリは、このブラウザに自動保存されます。</p>
-      </main>
-    </>
-  );
+  return {
+    todos,
+    categories,
+    loadError,
+    saveError,
+    retrySave,
+    addCategory,
+    changeCategoryColor,
+    deleteCategory,
+    addTodo,
+    toggleTodo,
+    deleteTodo,
+    deleteCompleted,
+  };
 };
-
-export default App;

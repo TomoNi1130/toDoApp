@@ -1,4 +1,4 @@
-import type { Category, Todo, ThemeColor } from "./types.ts";
+import type { Category, Todo, ThemeColor } from "../types/todo.ts";
 
 export const STORAGE_KEY = "calendar-todo-app:v1";
 export type AppData = { todos: Todo[]; categories: Category[] };
@@ -31,6 +31,7 @@ export const deserializeData = (json: string): AppData => {
       !isRecord(todo) ||
       typeof todo.id !== "string" ||
       typeof todo.name !== "string" ||
+      (todo.description !== undefined && typeof todo.description !== "string") ||
       typeof todo.isDone !== "boolean" ||
       typeof todo.priority !== "number" ||
       !Number.isInteger(todo.priority) ||
@@ -46,6 +47,8 @@ export const deserializeData = (json: string): AppData => {
     return {
       id: todo.id,
       name: todo.name,
+      // 説明フィールドがない旧データも、説明なしとして読み込む。
+      description: typeof todo.description === "string" ? todo.description : "",
       isDone: todo.isDone,
       priority: todo.priority,
       deadline,

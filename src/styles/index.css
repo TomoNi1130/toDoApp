@@ -1,0 +1,108 @@
+@import "tailwindcss";
+@import "./components.css";
+@import "./calendar.css";
+@import "./layout.css";
+
+:root {
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans JP", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+  color: #263544;
+  background: #f5f7fa;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  --accent: #167d70;
+  --accent-dark: #116357;
+  --muted: #75808d;
+  --border: #e7ebef;
+}
+
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  min-width: 320px;
+}
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+button,
+a,
+input,
+select,
+textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+button {
+  cursor: pointer;
+}
+button,
+a,
+input,
+select,
+textarea,
+[tabindex] {
+  outline-offset: 4px;
+}
+:focus-visible {
+  outline: 2px solid var(--accent);
+}
+button {
+  transition:
+    background-color 150ms,
+    color 150ms,
+    border-color 150ms;
+}
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+button svg {
+  flex-shrink: 0;
+}
+.skip-link {
+  position: fixed;
+  top: -100px;
+  left: 16px;
+  z-index: 10;
+  background: white;
+  padding: 12px;
+  border-radius: 8px;
+}
+.skip-link:focus {
+  top: 12px;
+}
+
+.color-blue {
+  --category: #6a96d2;
+  --category-bg: #edf3fc;
+  --category-text: #567eaf;
+}
+.color-green {
+  --category: #64a78b;
+  --category-bg: #edf7f1;
+  --category-text: #4a8a6c;
+}
+.color-red {
+  --category: #d48181;
+  --category-bg: #fceeee;
+  --category-text: #b16666;
+}
+.color-yellow {
+  --category: #d1ad60;
+  --category-bg: #fbf5e8;
+  --category-text: #a28038;
+}
+.color-purple {
+  --category: #a68cc9;
+  --category-bg: #f4effa;
+  --category-text: #8c70ad;
+}

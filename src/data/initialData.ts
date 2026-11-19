@@ -1,4 +1,4 @@
-import type { Todo, Category } from "./types";
+import type { Todo, Category } from "../types/todo";
 import { v4 as uuidv4 } from "uuid";
 
 export const initCategories: Category[] = [
@@ -25,6 +25,7 @@ export const initTodos: Todo[] = [
   {
     id: uuidv4(),
     name: "Learn React",
+    description: "",
     isDone: false,
     priority: 3,
     category: categories.get("勉強") || null,
@@ -33,6 +34,7 @@ export const initTodos: Todo[] = [
   {
     id: uuidv4(),
     name: "Learn TypeScript",
+    description: "",
     isDone: false,
     priority: 3,
     category: categories.get("家事") || null,
