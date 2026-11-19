@@ -39,10 +39,6 @@ Google カレンダーでタスクの種類ごとに色を設定する手間を�
 
 データは使用中のブラウザに保存されます。端末間の同期はありません。
 
-<!-- 画像5：スマートフォン幅で表示した画面。カレンダーと、その下のカテゴリ・タスク一覧が分かる状態。
-![スマートフォンでの表示](docs/images/mobile.png)
--->
-
 ## 使用技術
 
 React / TypeScript / Vite / Tailwind CSS・CSS / Font Awesome（アイコン）/ UUID（ID生成）/ LocalStorage（保存）/ GitHub Pages・GitHub Actions（公開）
