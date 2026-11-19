@@ -1,14 +1,20 @@
-import { useId, useRef, useState, type FormEvent } from "react";
+import { useId, useRef, useState, useImperativeHandle, type Ref, type FormEvent } from "react";
 import Dialog from "../../../components/ui/Dialog";
 import Icon from "../../../components/ui/Icon";
 import type { Category, Todo } from "../../../types/todo";
 
-type Props = {
-  categories: Category[];
-  onAddTodo: (todo: Omit<Todo, "id" | "isDone">) => void;
+export type TodoFormHandle = {
+  open: () => void;
 };
 
-export default function TodoForm({ categories, onAddTodo }: Props) {
+type Props = {
+  categories: Category[];
+  todo?: Todo;
+  onSubmitTodo: (values: Omit<Todo, "id" | "isDone">) => void;
+  ref?: Ref<TodoFormHandle>;
+};
+
+export default function TodoForm({ categories, todo, onSubmitTodo, ref }: Props) {
   const formId = useId();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [name, setName] = useState("");
@@ -29,20 +35,39 @@ export default function TodoForm({ categories, onAddTodo }: Props) {
   const selectedCategoryId = categories.some((category) => category.id === categoryId) ? categoryId : "";
 
   const openDialog = () => {
-    setName("");
-    setDescription("");
-    setCategoryId("");
-    setPriority(3);
-    setDeadline("");
+    setName(todo?.name ?? "");
+    setDescription(todo?.description ?? "");
+    setCategoryId(todo?.category?.id ?? "");
+    setPriority(todo?.priority ?? 3);
+    setDeadline(todo?.deadline ? todo.deadline.toISOString().slice(0, 16) : "");
+
+    const deadline = todo?.deadline;
+
+    if (deadline) {
+      const pad = (value: number) => String(value).padStart(2, "0");
+
+      const date = [deadline.getFullYear(), pad(deadline.getMonth() + 1), pad(deadline.getDate())].join("-");
+
+      const time = [pad(deadline.getHours()), pad(deadline.getMinutes())].join(":");
+
+      setDeadline(`${date}T${time}`);
+    } else {
+      setDeadline("");
+    }
+
     setIsNameTouched(false);
     dialogRef.current?.showModal();
   };
+
+  useImperativeHandle(ref, () => ({
+    open: openDialog,
+  }));
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsNameTouched(true);
     if (nameError || deadlineError) return;
-    onAddTodo({
+    onSubmitTodo({
       name: trimmedName,
       description: description.trim(),
       priority,
@@ -52,19 +77,23 @@ export default function TodoForm({ categories, onAddTodo }: Props) {
     dialogRef.current?.close();
   };
 
+  const dialogTitle = todo ? "タスクを編集" : "タスクを追加";
+  const finishTitle = todo ? "編集完了" : "追加";
+
   return (
     <>
       <button
         type="button"
-        className="list-add-button"
+        className={todo ? "button button-secondary" : "list-add-button"}
         onClick={openDialog}
-        aria-label="タスクを追加"
-        title="タスクを追加"
+        aria-label={dialogTitle}
+        title={dialogTitle}
         aria-haspopup="dialog"
       >
-        <Icon name="plus" />
+        {todo ? "編集" : <Icon name="plus" />}
       </button>
-      <Dialog dialogRef={dialogRef} title="タスクを追加">
+
+      <Dialog dialogRef={dialogRef} title={dialogTitle}>
         <form onSubmit={handleSubmit} className="form-stack">
           <div className="form-field">
             <label htmlFor={`${formId}-name`}>
@@ -161,7 +190,7 @@ export default function TodoForm({ categories, onAddTodo }: Props) {
             </button>
             <button type="submit" className="button button-primary" disabled={!!nameError || !!deadlineError}>
               <Icon name="plus" />
-              追加する
+              {finishTitle}
             </button>
           </div>
         </form>

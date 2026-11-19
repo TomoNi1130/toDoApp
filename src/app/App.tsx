@@ -45,7 +45,14 @@ export default function App() {
         <div className="workspace">
           <Calendar todos={todos} onSelectTodo={setSelectedTodoId} />
           <aside className="workspace-sidebar" aria-label="タスクとカテゴリの管理">
-            {selectedTodo && <TodoDetails todo={selectedTodo} onClose={() => setSelectedTodoId(null)} />}
+            {selectedTodo && (
+              <TodoDetails
+                todo={selectedTodo}
+                categories={categories}
+                onUpdateTodo={store.updateTodo}
+                onClose={() => setSelectedTodoId(null)}
+              />
+            )}
             <div className="sidebar-categories" hidden={!!selectedTodo}>
               <CategoryPanel
                 categories={categories}

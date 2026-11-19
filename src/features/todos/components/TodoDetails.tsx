@@ -1,8 +1,14 @@
-import type { Todo } from "../../../types/todo";
+import type { Category, Todo } from "../../../types/todo";
+import TodoForm from "./TodoForm";
 
-type Props = { todo: Todo; onClose: () => void };
+type Props = {
+  todo: Todo;
+  categories: Category[];
+  onClose: () => void;
+  onUpdateTodo: (id: string, values: Omit<Todo, "id" | "isDone">) => void;
+};
 
-export default function TodoDetails({ todo, onClose }: Props) {
+export default function TodoDetails({ todo, categories, onClose, onUpdateTodo }: Props) {
   return (
     <section className="panel detail-panel" aria-label="タスク詳細">
       <h3>{todo.name}</h3>
@@ -24,9 +30,13 @@ export default function TodoDetails({ todo, onClose }: Props) {
           <dd>{todo.deadline?.toLocaleDateString("ja-JP") ?? "未設定"}</dd>
         </div>
       </dl>
-      <button type="button" onClick={onClose} className="button button-secondary">
-        閉じる
-      </button>
+      <div className="dialog-actions">
+        <TodoForm todo={todo} categories={categories} onSubmitTodo={(values) => onUpdateTodo(todo.id, values)} />
+
+        <button type="button" onClick={onClose} className="button button-secondary">
+          閉じる
+        </button>
+      </div>
     </section>
   );
 }

@@ -62,6 +62,13 @@ export const useTodoStore = () => {
     setData((prev) => ({ ...prev, todos: [...prev.todos, newTodo] }));
   };
 
+  const updateTodo = (id: string,updateFields: Omit<Todo, "id" | "isDone">) => {
+  setData((prev) => ({
+    ...prev,
+    todos: prev.todos.map((todo) => (todo.id === id ? { ...todo, ...updateFields } : todo)),
+  }));
+  }
+
   const toggleTodo = (id: string) => {
     setData((prev) => ({
       ...prev,
@@ -92,6 +99,7 @@ export const useTodoStore = () => {
     changeCategoryColor,
     deleteCategory,
     addTodo,
+    updateTodo,
     toggleTodo,
     deleteTodo,
     deleteCompleted,
