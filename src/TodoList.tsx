@@ -31,7 +31,9 @@ const TodoList = ({ todos, onToggleTodo, onDeleteTodo, onDeleteCompleted }: Prop
         </button>
       </div>
       {todos.length === 0 ? (
-        <p className="text-sm text-gray-600">現在、登録されているタスクはありません。上のフォームから追加できます。</p>
+        <p className="text-sm text-gray-600">
+          現在、登録されているタスクはありません。「＋ タスクを追加」から追加できます。
+        </p>
       ) : (
         <ul className="space-y-2">
           {todos.map((todo) => (
