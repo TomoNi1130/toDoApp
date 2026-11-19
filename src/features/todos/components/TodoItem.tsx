@@ -3,11 +3,12 @@ import { categoryColorClasses, priorityLabels, type Todo } from "../../../types/
 type Props = {
   todo: Todo;
   onSelectTodo: (id: string) => void;
+  onEditTodo: (id: string) => void;
   onToggleTodo: (id: string) => void;
   onDeleteTodo: (id: string) => void;
 };
 
-export default function TodoItem({ todo, onSelectTodo, onToggleTodo, onDeleteTodo }: Props) {
+export default function TodoItem({ todo, onSelectTodo, onEditTodo, onToggleTodo, onDeleteTodo }: Props) {
   return (
     <li className={`todo-item ${todo.isDone ? "is-complete" : ""}`}>
       <input
@@ -23,6 +24,7 @@ export default function TodoItem({ todo, onSelectTodo, onToggleTodo, onDeleteTod
             type="button"
             className="todo-select-button"
             onClick={() => onSelectTodo(todo.id)}
+            onDoubleClick={() => onEditTodo(todo.id)}
             aria-label={`${todo.name}の詳細を表示`}
           >
             {todo.name}

@@ -1,14 +1,16 @@
+import type { Ref } from "react";
 import type { Category, Todo } from "../../../types/todo";
-import TodoForm from "./TodoForm";
+import TodoForm, { type TodoFormHandle } from "./TodoForm";
 
 type Props = {
   todo: Todo;
   categories: Category[];
   onClose: () => void;
   onUpdateTodo: (id: string, values: Omit<Todo, "id" | "isDone">) => void;
+  editFormRef: Ref<TodoFormHandle>;
 };
 
-export default function TodoDetails({ todo, categories, onClose, onUpdateTodo }: Props) {
+export default function TodoDetails({ todo, categories, onClose, onUpdateTodo, editFormRef }: Props) {
   return (
     <section className="panel detail-panel" aria-label="タスク詳細">
       <h3>{todo.name}</h3>
@@ -31,7 +33,12 @@ export default function TodoDetails({ todo, categories, onClose, onUpdateTodo }:
         </div>
       </dl>
       <div className="dialog-actions">
-        <TodoForm todo={todo} categories={categories} onSubmitTodo={(values) => onUpdateTodo(todo.id, values)} />
+        <TodoForm
+          ref={editFormRef}
+          todo={todo}
+          categories={categories}
+          onSubmitTodo={(values) => onUpdateTodo(todo.id, values)}
+        />
 
         <button type="button" onClick={onClose} className="button button-secondary">
           閉じる

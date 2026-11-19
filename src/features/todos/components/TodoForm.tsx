@@ -4,7 +4,7 @@ import Icon from "../../../components/ui/Icon";
 import type { Category, Todo } from "../../../types/todo";
 
 export type TodoFormHandle = {
-  open: () => void;
+  open: (initialDeadline?: Date) => void;
 };
 
 type Props = {
@@ -12,6 +12,7 @@ type Props = {
   todo?: Todo;
   onSubmitTodo: (values: Omit<Todo, "id" | "isDone">) => void;
   ref?: Ref<TodoFormHandle>;
+  onEditTodo?: (id: string) => void;
 };
 
 export default function TodoForm({ categories, todo, onSubmitTodo, ref }: Props) {
@@ -34,22 +35,19 @@ export default function TodoForm({ categories, todo, onSubmitTodo, ref }: Props)
     parsedDeadline && Number.isNaN(parsedDeadline.getTime()) ? "有効な日時を入力してください。" : "";
   const selectedCategoryId = categories.some((category) => category.id === categoryId) ? categoryId : "";
 
-  const openDialog = () => {
+  const openDialog = (initialDeadline?: Date) => {
     setName(todo?.name ?? "");
     setDescription(todo?.description ?? "");
     setCategoryId(todo?.category?.id ?? "");
     setPriority(todo?.priority ?? 3);
     setDeadline(todo?.deadline ? todo.deadline.toISOString().slice(0, 16) : "");
 
-    const deadline = todo?.deadline;
+    const deadline = todo?.deadline ?? initialDeadline;
 
     if (deadline) {
       const pad = (value: number) => String(value).padStart(2, "0");
-
       const date = [deadline.getFullYear(), pad(deadline.getMonth() + 1), pad(deadline.getDate())].join("-");
-
       const time = [pad(deadline.getHours()), pad(deadline.getMinutes())].join(":");
-
       setDeadline(`${date}T${time}`);
     } else {
       setDeadline("");
@@ -85,7 +83,7 @@ export default function TodoForm({ categories, todo, onSubmitTodo, ref }: Props)
       <button
         type="button"
         className={todo ? "button button-secondary" : "list-add-button"}
-        onClick={openDialog}
+        onClick={() => openDialog()}
         aria-label={dialogTitle}
         title={dialogTitle}
         aria-haspopup="dialog"

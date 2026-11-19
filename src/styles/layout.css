@@ -1,4 +1,11 @@
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
 .app-header {
+  flex-shrink: 0;
   background: #fff;
   border-bottom: 1px solid var(--border);
 }
@@ -39,9 +46,11 @@
   font-variant-numeric: tabular-nums;
 }
 .app-main {
+  flex: 1;
+  width: 100%;
   max-width: 1536px;
   padding: 38px 48px 20px;
-  margin: auto;
+  margin: 0 auto;
 }
 .page-heading {
   display: flex;
@@ -79,14 +88,20 @@ h1 {
   flex-direction: column;
   min-height: 0;
 }
-.page-footer {
+.app-footer {
   display: flex;
+  flex-shrink: 0;
   justify-content: center;
   align-items: center;
-  gap: 7px;
-  color: #929da6;
-  font-size: 11px;
-  padding: 25px 0 4px;
+  padding: 20px 24px;
+  border-top: 1px solid var(--border);
+  background: #fff;
+  color: var(--muted);
+  font-size: 12px;
+  text-align: center;
+}
+.app-footer small {
+  font-size: inherit;
 }
 
 @media (min-width: 1001px) {
@@ -118,7 +133,7 @@ h1 {
 }
 @media (min-width: 1440px) {
   .calendar-table td {
-    height: 126px;
+    height: 156px;
   }
 }
 @media (max-width: 1199px) {
@@ -207,11 +222,6 @@ h1 {
   .calendar-footer {
     padding: 13px 14px;
     font-size: 12px;
-  }
-  .page-footer {
-    font-size: 12px;
-    align-items: flex-start;
-    text-align: center;
   }
   .dialog {
     padding: 22px;

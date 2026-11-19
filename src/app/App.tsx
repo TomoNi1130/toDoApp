@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Header from "../components/layout/Header";
+import Footer from "../components/layout/Footer";
 import Calendar from "../features/calendar/components/Calendar";
 import CategoryPanel from "../features/categories/components/CategoryPanel";
 import TodoDetails from "../features/todos/components/TodoDetails";
 import TodoList from "../features/todos/components/TodoList";
 import { useTodoStore } from "../features/todos/hooks/useTodoStore";
+import type { TodoFormHandle } from "../features/todos/components/TodoForm";
 
 export default function App() {
   const store = useTodoStore();
@@ -12,6 +14,28 @@ export default function App() {
   const [selectedTodoId, setSelectedTodoId] = useState<string | null>(null);
   const selectedTodo = todos.find((todo) => todo.id === selectedTodoId);
   const uncompletedCount = todos.filter((todo) => !todo.isDone).length;
+
+  const editFormRef = useRef<TodoFormHandle>(null);
+  const addFormRef = useRef<TodoFormHandle>(null);
+
+  const [editRequest, setEditRequest] = useState<{
+    id: string;
+  } | null>(null);
+
+  const startEditing = (id: string) => {
+    setSelectedTodoId(id);
+    setEditRequest({ id });
+  };
+
+  const startAdding = (date: Date) => {
+    addFormRef.current?.open(date);
+  };
+
+  useEffect(() => {
+    if (editRequest) {
+      editFormRef.current?.open();
+    }
+  }, [editRequest]);
 
   return (
     <>
@@ -43,10 +67,16 @@ export default function App() {
         )}
 
         <div className="workspace">
-          <Calendar todos={todos} onSelectTodo={setSelectedTodoId} />
+          <Calendar
+            todos={todos}
+            onSelectTodo={setSelectedTodoId}
+            onEditTodo={startEditing}
+            onAddTodoAtDate={startAdding}
+          />
           <aside className="workspace-sidebar" aria-label="タスクとカテゴリの管理">
             {selectedTodo && (
               <TodoDetails
+                editFormRef={editFormRef}
                 todo={selectedTodo}
                 categories={categories}
                 onUpdateTodo={store.updateTodo}
@@ -64,16 +94,18 @@ export default function App() {
             <TodoList
               todos={todos}
               categories={categories}
+              addFormRef={addFormRef}
               onAddTodo={store.addTodo}
               onSelectTodo={setSelectedTodoId}
+              onEditTodo={startEditing}
               onToggleTodo={store.toggleTodo}
               onDeleteTodo={store.deleteTodo}
               onDeleteCompleted={store.deleteCompleted}
             />
           </aside>
         </div>
-        <footer className="page-footer">タスクとカテゴリは、このブラウザに自動保存されます。</footer>
       </main>
+      <Footer />
     </>
   );
 }

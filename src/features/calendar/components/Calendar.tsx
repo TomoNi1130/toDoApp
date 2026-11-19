@@ -3,9 +3,14 @@ import type { Todo } from "../../../types/todo";
 import CalendarGrid from "./CalendarGrid";
 import CalendarToolbar from "./CalendarToolbar";
 
-type Props = { todos: Todo[]; onSelectTodo: (id: string) => void };
+type Props = {
+  todos: Todo[];
+  onSelectTodo: (id: string) => void;
+  onEditTodo: (id: string) => void;
+  onAddTodoAtDate: (date: Date) => void;
+};
 
-export default function Calendar({ todos, onSelectTodo }: Props) {
+export default function Calendar({ todos, onSelectTodo, onEditTodo, onAddTodoAtDate }: Props) {
   const [displayMonth, setDisplayMonth] = useState(() => {
     const today = new Date();
     return new Date(today.getFullYear(), today.getMonth(), 1);
@@ -25,7 +30,13 @@ export default function Calendar({ todos, onSelectTodo }: Props) {
           setDisplayMonth(new Date(today.getFullYear(), today.getMonth(), 1));
         }}
       />
-      <CalendarGrid displayMonth={displayMonth} todos={todos} onSelectTodo={onSelectTodo} />
+      <CalendarGrid
+        displayMonth={displayMonth}
+        todos={todos}
+        onSelectTodo={onSelectTodo}
+        onEditTodo={onEditTodo}
+        onAddTodoAtDate={onAddTodoAtDate}
+      />
       <p className="calendar-footer">期限未設定：{unscheduledCount}件</p>
     </section>
   );

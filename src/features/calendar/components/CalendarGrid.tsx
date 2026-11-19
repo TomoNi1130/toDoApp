@@ -5,11 +5,13 @@ type Props = {
   displayMonth: Date;
   todos: Todo[];
   onSelectTodo: (id: string) => void;
+  onEditTodo: (id: string) => void;
+  onAddTodoAtDate: (date: Date) => void;
 };
 
 const weekdays = ["日", "月", "火", "水", "木", "金", "土"];
 
-export default function CalendarGrid({ displayMonth, todos, onSelectTodo }: Props) {
+export default function CalendarGrid({ displayMonth, todos, onSelectTodo, onEditTodo, onAddTodoAtDate }: Props) {
   const days = getMonthDays(displayMonth);
   const todayKey = dateKey(new Date());
   const todosByDate = new Map<string, Todo[]>();
@@ -46,6 +48,7 @@ export default function CalendarGrid({ displayMonth, todos, onSelectTodo }: Prop
                 return (
                   <td
                     key={key}
+                    onDoubleClick={() => onAddTodoAtDate(date)}
                     className={`${date.getMonth() !== displayMonth.getMonth() ? "outside-month" : ""} ${isToday ? "today-cell" : ""}`}
                   >
                     <time
@@ -62,6 +65,10 @@ export default function CalendarGrid({ displayMonth, todos, onSelectTodo }: Prop
                             <button
                               type="button"
                               onClick={() => onSelectTodo(todo.id)}
+                              onDoubleClick={(event) => {
+                                event.stopPropagation();
+                                onEditTodo(todo.id);
+                              }}
                               aria-label={`${todo.name}の詳細を表示`}
                               className={`calendar-event ${categoryColorClasses[todo.category?.color ?? "blue"]} ${todo.isDone ? "is-complete" : ""}`}
                             >

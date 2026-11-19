@@ -1,6 +1,7 @@
+import type { Ref } from "react";
 import Icon from "../../../components/ui/Icon";
 import type { Category, Todo } from "../../../types/todo";
-import TodoForm from "./TodoForm";
+import TodoForm, { type TodoFormHandle } from "./TodoForm";
 import TodoItem from "./TodoItem";
 
 type Props = {
@@ -8,9 +9,11 @@ type Props = {
   categories: Category[];
   onAddTodo: (todo: Omit<Todo, "id" | "isDone">) => void;
   onSelectTodo: (id: string) => void;
+  onEditTodo: (id: string) => void;
   onToggleTodo: (id: string) => void;
   onDeleteTodo: (id: string) => void;
   onDeleteCompleted: () => void;
+  addFormRef: Ref<TodoFormHandle>;
 };
 
 export default function TodoList({
@@ -18,9 +21,11 @@ export default function TodoList({
   categories,
   onAddTodo,
   onSelectTodo,
+  onEditTodo,
   onToggleTodo,
   onDeleteTodo,
   onDeleteCompleted,
+  addFormRef,
 }: Props) {
   const completedCount = todos.filter((todo) => todo.isDone).length;
   return (
@@ -50,6 +55,7 @@ export default function TodoList({
               key={todo.id}
               todo={todo}
               onSelectTodo={onSelectTodo}
+              onEditTodo={onEditTodo}
               onToggleTodo={onToggleTodo}
               onDeleteTodo={onDeleteTodo}
             />
@@ -57,7 +63,7 @@ export default function TodoList({
         </ul>
       )}
       <div className="list-actions">
-        <TodoForm categories={categories} onAddTodo={onAddTodo} />
+        <TodoForm ref={addFormRef} categories={categories} onSubmitTodo={onAddTodo} onEditTodo={onEditTodo} />
       </div>
     </section>
   );
